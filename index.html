@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Convince Me – user journey motion</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF4E6;--ink:#1A0F0D;--dim:#CDB99A;--hi:#F2A81D;--acc:#E9532F;--mut:#6B5D55}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17110F;--ink:#FFF1DA;--dim:#5A4B43;--mut:#B8A798}}
+:root[data-theme="dark"]{--bg:#17110F;--ink:#FFF1DA;--dim:#5A4B43;--mut:#B8A798}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif}
+body{padding:calc(18px + env(safe-area-inset-top,0)) 16px calc(18px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;align-items:center;gap:10px}
+.hd{width:100%;max-width:1100px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font:600 clamp(26px,5vw,40px)/1 'Fredoka',sans-serif;color:var(--hi)}
+.ct{display:flex;gap:8px;align-items:center}.ct span{font-size:13px;font-weight:800;color:var(--mut);margin-right:6px}
+button{border:1.5px solid var(--dim);background:none;color:var(--ink);border-radius:999px;padding:9px 16px;font:800 13px 'Nunito';cursor:pointer}
+button:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+svg{width:100%;max-width:1100px;height:auto}
+.n rect,.n polygon{fill:none;stroke:var(--ink);stroke-width:1.5;transition:fill .35s,stroke .35s}
+.n text{fill:var(--ink);font:700 15px 'Nunito',sans-serif;text-anchor:middle;transition:fill .35s}
+.n.k rect,.n.k polygon{stroke:var(--acc);stroke-width:2.5}
+.n.lit rect,.n.lit polygon{fill:var(--hi);stroke:var(--hi)}.n.lit text{fill:#1A0F0D}
+.n.cur{animation:pul .8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pul{50%{transform:scale(1.07)}}
+.e{fill:none;stroke:var(--dim);stroke-width:1.6}.l{fill:none;stroke:var(--acc);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.lb{fill:var(--mut);font:800 12px 'Nunito';text-anchor:middle}
+</style></head><body>
+<div class="hd"><h1>User journey</h1><div class="ct"><span id="pth"></span><button id="pp" onclick="tg()">Pause</button><button onclick="play()">Replay</button></div></div>
+<svg id="sv" viewBox="0 0 1220 690" role="img" aria-label="Animated user journey flowchart"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8z" fill="var(--dim)"/></marker></defs><g id="E"></g><g id="L"></g><g id="Nd"></g><g id="R" opacity="0"></g></svg>
+<script>
+const $=s=>document.querySelector(s),NS='http://www.w3.org/2000/svg';
+const N={launch:[57,124,120,55,['Launch app'],'p'],get:[224,123,121,56,['Get started']],prof:[390,123,122,56,['Enter profile']],inc:[558,123,122,56,['Add monthly','income']],pri:[725,123,122,56,['Choose','priorities']],con:[893,123,121,56,['Connect','shopping','apps']],dash:[1075,235,119,56,['Personal','dashboard'],'k'],brw:[1073,426,121,56,['Browse shop']],opn:[908,426,121,56,['Open product']],cart:[741,426,123,56,['Add to cart']],rev:[576,426,122,56,['Review','checkout']],pay:[411,426,121,56,['Tap pay']],imp:[246,426,121,56,['Impulse','intervention'],'k'],pr5:[80,426,122,56,['Answer 5','prompts']],recs:[48,592,186,76,['View','recommendations'],'p'],comp:[893,227,121,56,['Complete','purchase'],'p'],leave:[893,309,121,56,['Leave','purchase'],'p']};
+const P=(...a)=>a;
+const E=[ // id, points, to, hidden
+['a',P([177,151],[224,151]),'get'],['b',P([345,151],[390,151]),'prof'],['c',P([512,151],[558,151]),'inc'],['d',P([680,151],[725,151]),'pri'],['e',P([847,151],[893,151]),'con'],
+['f',P([1014,151],[1035,151],[1035,263],[1075,263]),'dash'],['g',P([1134,291],[1134,426]),'brw'],['h',P([1073,454],[1029,454]),'opn'],['i',P([908,454],[864,454]),'cart'],['j',P([741,454],[698,454]),'rev'],['k',P([576,454],[532,454]),'pay'],['l',P([411,454],[367,454]),'imp'],['m',P([246,454],[202,454]),'pr5'],['n',P([141,482],[141,592]),'recs'],
+['o',P([112,592],[112,545],[24,545],[24,288],[535,288]),'dec'],
+['bu',P([668,254],[893,254]),'comp'],['sk',P([657,337],[893,337]),'leave'],
+['cb',P([1014,254],[1035,254],[1035,263],[1075,263]),'dash'],['cs',P([1014,337],[1035,337],[1035,263],[1075,263]),'dash'],
+['h1',P([535,288],[618,288]),0,1],['h2',P([618,288],[668,254]),0,1],['h3',P([618,288],[657,337]),0,1]];
+const M={};E.forEach(e=>M[e[0]]=e);
+const len=p=>p.slice(1).reduce((s,q,i)=>s+Math.hypot(q[0]-p[i][0],q[1]-p[i][1]),0);
+function at(p,d){for(let i=1;i<p.length;i++){const l=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);if(d<=l||i==p.length-1){const t=Math.min(1,d/l||0);return[p[i-1][0]+(p[i][0]-p[i-1][0])*t,p[i-1][1]+(p[i][1]-p[i-1][1])*t]}d-=l}}
+const mk=(t,a,par)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);par.appendChild(e);return e};
+const NO={},LI={};
+for(const k in N){const[x,y,w,h,t,s]=N[k],g=mk('g',{class:'n'+(s=='k'?' k':'')},$('#Nd'));mk('rect',{x,y,width:w,height:h,rx:s=='p'?h/2:3},g);
+t.forEach((l,i)=>{const e=mk('text',{x:x+w/2,y:y+h/2+5+(i-(t.length-1)/2)*18},g);e.textContent=l});NO[k]=g}
+{const g=mk('g',{class:'n k'},$('#Nd'));mk('polygon',{points:'618,203 704,288 618,373 532,288'},g);const t=mk('text',{x:618,y:293},g);t.textContent='User Decision';NO.dec=g}
+E.forEach(e=>{if(e[3])return;const d='M'+e[1].map(p=>p.join(',')).join(' L'),L=len(e[1]);
+mk('path',{d,class:'e','marker-end':'url(#ar)'},$('#E'));LI[e[0]]=mk('path',{d,class:'l','stroke-dasharray':L,'stroke-dashoffset':L},$('#L'))});
+[['Buy',780,246],['Skip',780,329]].forEach(([t,x,y])=>{const e=mk('text',{x,y,class:'lb'},$('#E'));e.textContent=t});
+{let p='';for(let i=0;i<20;i++){const r=i%2?13:19,a=i*Math.PI/10;p+=(r*Math.sin(a)).toFixed(1)+','+(-r*Math.cos(a)).toFixed(1)+' '}
+const g=$('#R');mk('polygon',{points:p,fill:'#F2B52A',stroke:'#1A0F0D','stroke-width':1.5},g);mk('circle',{cx:-5,cy:-2,r:5,fill:'#fff'},g);mk('circle',{cx:6,cy:-3,r:4.5,fill:'#fff'},g);mk('circle',{cx:-4,cy:-1,r:2.5,fill:'#1A0F0D'},g);mk('circle',{cx:7,cy:-2,r:2.3,fill:'#1A0F0D'},g)}
+let tok=0,paused=false,br=0,prev=null;
+const fr=()=>new Promise(r=>requestAnimationFrame(r));
+async function tw(ms,fn,tk){let el=0,last=await fr();while(el<ms){const t=await fr();if(tk!=tok)return 0;if(!paused)el+=t-last;last=t;fn&&fn(Math.min(1,el/ms))}return 1}
+function lit(k){if(prev)NO[prev].classList.remove('cur');NO[k].classList.add('lit','cur');prev=k}
+async function play(){const tk=++tok,b=br;br=1-br;prev=null;
+Object.values(NO).forEach(g=>g.classList.remove('lit','cur'));for(const k in LI){const L=len(M[k][1]);LI[k].style.strokeDashoffset=L}
+$('#pth').textContent='Path: '+(b?'Buy':'Skip');
+const seq=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','h1',...(b?['h2','bu','cb']:['h3','sk','cs'])];
+lit('launch');$('#R').setAttribute('opacity',1);const s=at(M.a[1],0);$('#R').setAttribute('transform',`translate(${s[0]},${s[1]})`);
+if(!await tw(1200,0,tk))return;
+for(const id of seq){const e=M[id],L=len(e[1]),p0=e[1];
+if(!await tw(Math.max(800,L/.2),q=>{const pt=at(p0,L*q);$('#R').setAttribute('transform',`translate(${pt[0]},${pt[1]})`);if(LI[id])LI[id].style.strokeDashoffset=L*(1-q)},tk))return;
+if(e[2]&&e[2]!='dec')lit(e[2]);if(e[2]=='dec')lit('dec');
+if(!await tw(e[3]?0:900,0,tk))return}
+if(!await tw(3500,0,tk))return;play()}
+function tg(){paused=!paused;$('#pp').textContent=paused?'Play':'Pause'}
+play();
+</script></body></html>
